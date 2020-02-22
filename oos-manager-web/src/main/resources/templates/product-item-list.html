@@ -1,0 +1,267 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<!--[if lt IE 9]>
+	<script type="text/javascript" src="/lib/html5shiv.js"></script>
+	<script type="text/javascript" src="/lib/respond.min.js"></script>
+	<![endif]-->
+	<link rel="stylesheet" type="text/css" href="/h-ui/css/H-ui.min.css" />
+	<link rel="stylesheet" type="text/css" href="/h-ui.admin/css/H-ui.admin.css" />
+	<link rel="stylesheet" type="text/css" href="/lib/Hui-iconfont/1.0.8/iconfont.css" />
+	<link rel="stylesheet" type="text/css" href="/h-ui.admin/skin/default/skin.css" id="skin" />
+	<link rel="stylesheet" type="text/css" href="/h-ui.admin/css/style.css" />
+
+
+	<!--mybatis分页css-->
+	<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="/bootstrap-table/bootstrap-table.min.css"/>
+	<!--[if IE 6]>
+	<script type="text/javascript" src="/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+	<script>DD_belatedPNG.fix('*');</script>
+
+	<![endif]-->
+	<title>分类管理</title>
+</head>
+<body>
+<div class="page-container">
+
+
+    <span class="l" id="toolbar">
+
+		<a href="javascript:;" onclick="batch_del()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+
+
+		<a href="javascript:;" onclick="item_add()" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加分类</a>
+
+	</span>
+
+
+	<!-- bootstrap-table 显示数据的表格 -->
+	<table  id="itemTable" style="table-layout: fixed;"></table>
+
+
+</div>
+
+
+</body>
+
+
+<!--_footer 作为公共模版分离出去-->
+
+<!--bootstrap-table要1.11.3jquery-->
+<script type="text/javascript" src="/lib/jquery/1.11.3/jquery.min.js"></script>
+
+<script type="text/javascript" src="/lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript" src="/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/lib/laypage/1.2/laypage.js"></script>
+
+
+<script type="application/javascript" src="/bootstrap-table/bootstrap-table.min.js"></script>
+<script type="application/javascript" src="/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
+
+
+
+<script type="text/javascript">
+
+	$(function() {
+		$('#itemTable').bootstrapTable({
+			url: '/item/list.do',//ajax请求的url地址
+			method:'get',
+			/*
+                ajax请求以后回调函数的处理
+                后台使用返回的PageInfo对象中的 结果 级的key是list，总条数是total
+                而前台bootstrapTable插件需要的数据的key叫做rows ，总条数也是叫做total
+                那么出现一个问题 : 总条数的key能对上，结果集对不上，就需要在ajax请求完成回调
+                responseHandler 这个函数方法处理一下
+                并且在自定义一个 json,rows做为key，返回json的 list作为值
+                    total：还是total
+                这样才能满足 bootstrapTable插件数据的需要
+            */
+			responseHandler: function(res) {
+				/*
+                    res: 后台分页对象PageInfo返回对应的json对象
+                    res.list : 结果集
+                    res.total : 总记录数
+                */
+				var data =  {rows: res.list,total: res.total};
+
+				return data;
+			},
+			pagination: true,
+			toolbar: "#toolbar",//顶部显示的工具条（添加和批量删除的）
+			contentType: 'application/x-www-form-urlencoded',//条件搜索的时候ajax请求给后台数据的数据类型（条件搜索post提交必须设置）
+			search: true,//是否显示搜索框
+			pageNumber: 1,//默认的页面 第一页
+			pageSize: 10,//默认的每页条数
+			//pageList:[10,25,50,100],//每页能显示的条数
+			sidePagination: "server",//是否是服务器分页，每次请求都是对应的10条数据，下一页发送ajax请求
+			paginationHAlign: 'right', //底部分页条
+			/*showToggle: true, //是否显示详细视图和列表视图的切换按钮
+            cardView: false, //是否显示详细视图
+            showColumns: true, //是否显示所有的列*/
+			showRefresh: true, //是否显示刷新按钮
+			columns: [ //表格显示数据对应的表头设置，
+				{ checkbox: true},//是否显示前台的复选框（多选）
+				/*
+                    每列数据的表头的设置
+                    filed:返回json数据对应数据的key
+                    title:表头要显示的名
+                */
+				{field: 'id',title: '编号',align:'center',width:50},
+				{field: 'title',title: '菜式名称',align:'center',width:100},
+				{field: 'ingredients',title: '食材原料',align:'center',width:200},
+				{field: 'price',title: '价格',align:'center',width:100},
+				{field: 'num',title: '库存数量',align:'center',width:100},
+				{field: 'image',title: '图片路径',formatter:imageFormatter,align:'center',width:200},
+				{field: 'categoryName',title: '分类名称',align:'center',width:100},
+				{field: 'status',title: '状态',formatter:statusFormatter,align:'center',width:50},
+				{field: 'create', title: '创建时间',align:'center',width:200},
+
+				//操作列的设置（删除，修改）
+				/*
+                formatter: 格式化这一行，回调一个函数
+                */
+				{
+					field:'id',
+					title:'操作',
+					align:'center',
+					formatter:operationFormatter
+				}
+			],
+
+
+			/*发送请求的参数，
+                params: bootstrapTable的插件内部参数对象包含如下参数
+                limit, offset, search, sort
+                limit：每页条数
+                offset：每页的结束位置
+                search:搜索框对应的值
+                sort：排序
+            */
+			queryParams: function(params) {
+
+
+
+				var paramData = {pageNum:params.offset / params.limit + 1,
+					pageSize:params.limit,
+					keyword:params.search}
+
+				return paramData;
+
+				//此方法在用户分页或者搜索的时候回自动发送ajax请求调用，并把对应的参数传递给后台
+				/* return {
+                    pageNum: params.offset / params.limit + 1, //页码
+                    pageSize: params.limit, //页面大小
+                    keyword: params.search
+                }; */
+			}
+		})
+
+	});
+
+	function operationFormatter(value,row,index){
+		//console.log(value,row,index);
+
+
+		html = "<span onclick='item_edit("+value+")' style='cursor: pointer;' class='glyphicon glyphicon-pencil'></span>&nbsp;&nbsp;&nbsp;";
+
+
+		html+="<span onclick='item_del("+value+")' style='cursor: pointer;color:red' class='glyphicon glyphicon-trash'></span>"
+		return html;
+	}
+
+	function statusFormatter(value,row,index) {
+
+		if(value=="1"){
+			return "有效";
+		}
+		return "无效";
+
+	}
+
+	function imageFormatter(value,row,index) {
+		return "<img src="+value+" width='160' height='160' />";
+	}
+
+
+
+
+	function batch_del() {
+
+		layer.confirm('确认要删除吗？',function (index) {
+			var ids = $('#itemTable').bootstrapTable('getAllSelections');
+			console.log(ids);
+			var itemIds = new Array();
+			for (var i=0;i<ids.length;i++){
+				itemIds.push(ids[i].id);
+			}
+
+			$.post("item/batchDelete.do",{itemIds:itemIds},function (data) {
+				layer.msg(data.msg,{time:1000,icon:data.status});
+				if (data.status == 1){
+					refreshTable();
+				}
+			})
+		})
+
+	}
+
+	function item_edit(id) {
+
+
+		layer.open(
+				{
+					type:2,
+					title:"修改产品信息",
+					shade:[0],
+					area:['100%','100%'],
+					content:["/item/edit.do?itemId="+id,'yes']
+
+				}
+		)
+
+	}
+
+	function item_add(){
+
+
+		layer.open(
+				{
+					type:2,
+					title:"添加产品信息",
+					shade:[0],
+					area:['100%','100%'],
+					content:["/item/edit.do",'yes']
+
+				}
+		)
+	}
+
+	function item_del(id) {
+		layer.confirm('确认要删除吗？',function (index) {
+			$.post("item/delete.do",{itemId:id},function (data) {
+				layer.msg(data.msg,{time:2000,icon:data.status});
+				if (data.status == 1){
+					refreshTable();
+				}
+			})
+		})
+
+	}
+
+	function refreshTable(){
+		$("#itemTable").bootstrapTable("refresh");
+	}
+
+</script>
+</html>
