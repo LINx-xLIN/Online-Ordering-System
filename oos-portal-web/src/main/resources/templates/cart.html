@@ -1,0 +1,415 @@
+<!DOCTYPE html >
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html"  />
+    <title>我的购物车</title>
+
+
+    <link href="css/index.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+
+
+
+
+
+<div class="gwc" style=" margin:auto;">
+    <table  cellspacing="0" class="gwc_tb1">
+        <tr>
+            <td class="tb1_td1"><input id="Checkbox1" type="checkbox"  class="allselect"/></td>
+            <td class="tb1_td1">全选</td>
+            <td class="tb1_td3">商品信息</td>
+            <td class="tb1_td6">单价</td>
+            <td class="tb1_td6">数量</td>
+            <td class="tb1_td6">金额</td>
+            <td class="tb1_td7">操作</td>
+        </tr>
+    </table>
+
+
+
+    <table cellpadding="0" cellspacing="0" class="gwc_tb3">
+        <tr>
+
+            <td class="tb3_td2">已选商品 <label id="count" style="color:#ff5500;font-size:14px; font-weight:bold;">0</label> 件</td>
+            <td class="tb3_td3">合计(不含运费):<span>￥</span><span style=" color:#ff5500;"><label id="totalMoney" style="color:#ff5500;font-size:14px; font-weight:bold;"></label></span></td>
+            <td class="tb3_td4"><a href="javascript:void(0);" class="jz1" id="jz2" >结算</a></td>
+        </tr>
+    </table>
+
+
+
+    <form action="/order/getOrderInfo.do" method="post" id="orderForm"></form>
+
+
+
+
+</div>
+
+<!--js类引用-->
+
+<script type="text/javascript" src="lib/jquery/1.11.3/jquery.min.js"></script>
+
+<script type="text/javascript" src="js/Calculation.js"></script>
+<script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+
+
+
+<!---商品加减算总数---->
+<script type="text/javascript">
+
+
+    function minNum(node) {
+        /*console.log($(node).find(".unitPrice").text());*/
+
+
+        $(node).find(".text_box").val((parseInt($(node).find(".text_box").val())-1 >=0? parseInt($(node).find(".text_box").val())-1 : 0));
+
+        if($(node).find(".text_box").val() == 0){
+            $(node.parentNode.parentNode).remove();
+        }
+
+
+        $(node).find(".money").html(($(node).find(".text_box").val()*$(node).find(".unitPrice").text()).toFixed(2));
+
+
+        GetCount();
+
+        var dataId = $(node).find(".data-id").attr("data-id");
+
+        $.ajax({
+            type: "get",
+            url: "/cart/min.do",
+            data: {itemId: dataId},
+            dataType: "json",
+            success: function (data) {
+
+            }
+
+        })
+
+    }
+
+    function addNum(node) {
+
+
+
+        $(node).find(".text_box").val(parseInt($(node).find(".text_box").val())+1 );
+
+        $(node).find(".money").html(($(node).find(".text_box").val()*$(node).find(".unitPrice").text()).toFixed(2));
+
+        GetCount();
+
+
+        var dataId = $(node).find(".data-id").attr("data-id");
+
+
+
+        $.ajax({
+            type: "get",
+            url: "/cart/add.do",
+            data: {itemId: dataId},
+            dataType: "json",
+            success: function (data) {
+
+            }
+
+        })
+
+    }
+
+
+    /*输入数量改变时*/
+    function textBox(node) {
+        $(node).find(".money").html(($(node).find(".text_box").val()*$(node).find(".unitPrice").text()).toFixed(2));
+
+        GetCount();
+
+
+
+    }
+
+
+    function deleteItem(node) {
+        $(node.parentNode.parentNode).remove();
+
+        GetCount();
+
+        var dataId = $(node).find(".data-id").attr("data-id");
+        $.ajax({
+            type: "get",
+            url: "/cart/delete.do",
+            data: {itemId: dataId},
+            dataType: "json",
+            success: function (data) {
+
+            }
+
+        })
+    }
+
+
+
+    function GetCount() {
+        var count = 0;
+        var totalMoney = 0;
+        $("#orderForm").empty();
+        $(".gwc_tb2 input[name=newslist]").each(function () {
+            if ($(this).prop("checked")) {
+
+
+               $("#orderForm").append("<input type=\"hidden\" name=\"orderItems[" +
+                    count +
+                    "].itemId\" value=\"" +
+                    $(this.parentNode.parentNode).find(".data-id").attr("data-id")+
+                    "\"/>"+
+                    "<input type=\"hidden\" name=\"orderItems[" +
+                    count +
+                    "].num\" value=\"" +
+                    $(this.parentNode.parentNode).find(".text_box").val()+
+                    "\"/>"+
+                    "<input type=\"hidden\" name=\"orderItems[" +
+                    count +
+                    "].price\" value=\"" +
+                    $(this.parentNode.parentNode).find(".unitPrice").text()+
+                    "\"/>"+
+                    "<input type=\"hidden\" name=\"orderItems[" +
+                    count +
+                    "].totalFee\" value=\"" +
+                    $(this.parentNode.parentNode).find(".money").text()+
+                    "\"/>"+
+                    "<input type=\"hidden\" name=\"orderItems[" +
+                    count +
+                    "].title\" value=\"" +
+                    $(this.parentNode.parentNode).find(".titleName").text() +
+                    "\"/>"+
+                    "<input type=\"hidden\" name=\"orderItems[" +
+                    count +
+                    "].picPath\" value=\"" +
+                    $(this.parentNode.parentNode).find(".picPath").attr("src")+
+                    "\"/>");
+
+
+                count++;
+                totalMoney += parseFloat($(this.parentNode.parentNode).find(".money").text());
+
+            }
+        });
+
+
+        $("#count").text(count);
+        $("#totalMoney").text(totalMoney.toFixed(2));
+        if(count > 0){
+            $("#jz2").prop("class","jz2");
+            $("#jz2").attr("onclick","generateForm()");
+        }else {
+            $("#jz2").prop("class","jz1");
+            $("#jz2").attr("onclick","javascript:void(0)");
+        }
+
+
+
+
+
+    }
+
+    /*提交表单*/
+    function generateForm(){
+
+
+        $("#orderForm").append(
+            "               <input type=\"hidden\" name=\"payment\" value=\"" +
+            $("#totalMoney").text() +
+            "\"/>\n");
+
+
+
+        $("#orderForm").submit();
+
+        /*layer.open(
+            {
+                type:2,
+                title:"填写送货地址和付款方式",
+                shade:[0],
+                area:['800px','500px'],
+                content:["/address.html",'yes'],
+                btn: ['确定','取消'],
+                //这里yes:function为设置的第一个按钮的function，后面设置的按钮默认点击关闭
+                yes:function(index,layero) {
+                    //需要回显的值
+                    //layero为当前的DOM对象，去找打开的iframe转成DOM对象调用子页面其中的function (callbackdata)
+                    var data = $(layero).find("iframe")[0].contentWindow.formData();
+
+
+
+                    $("#orderForm").append("<input type=\"hidden\" name=\"paymentType\" value=\"" +
+                        data.paymentType +
+                        "\"/>\n" +
+                        "               <input type=\"hidden\" name=\"payment\" value=\"" +
+                        $("#totalMoney").text() +
+                        "\"/>\n" +
+                        "           <input type=\"hidden\" name=\"orderShipping.receiverName\" value=\"" +
+                        data.receiverName +
+                        "\"/>\n" +
+                        "               <input type=\"hidden\" name=\"orderShipping.receiverMobile\" value=\"" +
+                        data.receiverMobile +
+                        "\"/>\n" +
+                        "               <input type=\"hidden\" name=\"orderShipping.receiverState\" value=\"" +
+                        data.receiverState +
+                        "\"/>\n" +
+                        "               <input type=\"hidden\" name=\"orderShipping.receiverCity\" value=\"" +
+                        data.receiverCity +
+                        "\"/>\n" +
+                        "               <input type=\"hidden\" name=\"orderShipping.receiverDistrict\" value=\"" +
+                        data.receiverDistrict +
+                        "\"/>\n" +
+                        "               <input type=\"hidden\" name=\"orderShipping.receiverAddress\" value=\"" +
+                        data.receiverAddress +
+                        "\"/>");
+
+
+
+                    //关闭子页面*!/
+                    parent.layer.close(index);
+
+                    $("#orderForm").submit();
+
+                }
+
+
+
+            }
+        )*/
+
+
+
+
+
+
+
+
+
+    }
+
+    $(function () {
+        // 全选
+        $(".allselect").click(function () {
+
+            if ($(".allselect").prop("checked") == true) {
+
+                $(".gwc_tb2 input[name=newslist]").each(function () {
+                    $(this).prop("checked", true);
+                });
+
+
+
+            }else {
+                $(".gwc_tb2 input[name=newslist]").each(function () {
+                    $(this).prop("checked", false);
+
+                });
+            }
+            GetCount();
+        });
+
+
+
+
+
+    })
+
+
+
+
+
+
+</script>
+
+<script type="application/javascript">
+
+        function getCookie(name){
+            var strcookie = decodeURIComponent(document.cookie);//获取cookie字符串
+            var arrcookie = strcookie.split("; ");//分割
+            //遍历匹配
+            for ( var i = 0; i < arrcookie.length; i++) {
+                var arr = arrcookie[i].split("=");
+                if (arr[0] == name){
+                    return arr[1];
+                }
+            }
+            return "";
+        }
+
+
+
+        $(function () {
+
+
+
+
+
+            if(getCookie("OOS_CART_COOKIE") != ""){
+                var jsonCart = JSON.parse(getCookie("OOS_CART_COOKIE"));
+
+
+                for (var i = 0; i < jsonCart.length; i++) {
+
+                    $("table.gwc_tb1").after("" +
+                        "      <table cellpadding=\"0\" cellspacing=\"0\" class=\"gwc_tb2\">\n" +
+                        "        <tr>\n" +
+                        "            <td  class=\"tb1_td1 data-id\" data-id='" +
+                        jsonCart[i].id +
+                        "'>&nbsp;</td>\n" +
+                        "            <td class=\"tb1_td1\"><input type=\"checkbox\" value=\"1\" name=\"newslist\"  onclick=\"GetCount()\"/></td>\n" +
+                        "            <td class=\"tb2_td2\"><a href=\"#\"><img class='picPath' src=\"" +
+                        jsonCart[i].image +
+                        "\"/></a></td>\n" +
+                        "            <td class=\"tb1_td4 \"><a href=\"#\" >&nbsp;" +"<strong class='titleName'>" +
+                        jsonCart[i].title +
+                        "</strong>"
+                        +
+                        "</a></td>\n" +
+                        "            <td class=\"tb1_td6 unitPrice\" >" +
+                        jsonCart[i].price +
+                        "</td>\n" +
+                        "\n" +
+                        "            <td class=\"tb1_td6\">\n" +
+                        "                <input class=\"min\" name=\"\"  style=\" width:20px; height:18px;border:1px solid #ccc;\" type=\"button\" value=\"-\" onclick=\"minNum(this.parentNode.parentElement)\"/>\n" +
+                        "                <input class=\"text_box\" name=\"\" type=\"text\" value=\"" +
+                        jsonCart[i].num +
+                        "\" style=\" width:30px; text-align:center; border:1px solid #ccc;\" onchange=\"textBox(this.parentNode.parentElement)\" />\n" +
+                        "                <input class=\"add\" name=\"\" style=\" width:20px; height:18px;border:1px solid #ccc;\" type=\"button\" value=\"+\" onclick=\"addNum(this.parentNode.parentElement)\" />\n" +
+                        "            </td>\n" +
+                        "\n" +
+                        "            <td class=\"tb1_td6\"><label  class=\"tot money\" style=\"color:#ff5500;font-size:14px; font-weight:bold;\">" +
+                        (jsonCart[i].price * jsonCart[i].num).toFixed(2)+
+                        "</label></td>\n" +
+                        "\n" +
+                        "            <td class=\"tb1_td7\"><a href=\"#\" onclick=\"deleteItem(this.parentNode.parentNode)\">删除</a></td>\n" +
+                        "        </tr>\n" +
+                        "    </table>");
+                }
+
+
+
+            }
+
+
+
+        })
+
+
+
+
+
+
+
+
+
+    </script>
+
+</body>
+</html>

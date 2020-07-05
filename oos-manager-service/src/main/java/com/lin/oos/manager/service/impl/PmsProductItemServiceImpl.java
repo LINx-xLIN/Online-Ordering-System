@@ -3,14 +3,18 @@ package com.lin.oos.manager.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.lin.oos.manager.mapper.PmsProductCategoryMapper;
 import com.lin.oos.manager.mapper.PmsProductItemMapper;
+import com.lin.oos.manager.producter.ItemProducter;
 import com.lin.oos.pojo.PmsProductCategory;
 import com.lin.oos.pojo.PmsProductCategoryExample;
 import com.lin.oos.pojo.PmsProductItem;
 import com.lin.oos.pojo.PmsProductItemExample;
+import com.lin.oos.service.PmsProductCategoryService;
 import com.lin.oos.service.PmsProductItemService;
 import com.lin.oos.vo.OosResult;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +30,11 @@ public class PmsProductItemServiceImpl implements PmsProductItemService {
     @Autowired
     private PmsProductItemMapper pmsProductItemMapper;
 
+    @Autowired
+    private PmsProductCategoryMapper pmsProductCategoryMapper;
 
+    @Autowired
+    private ItemProducter itemProducter;
 
 
     @Override
@@ -36,15 +44,16 @@ public class PmsProductItemServiceImpl implements PmsProductItemService {
         pmsProductItem.setCreate(new Date());
         pmsProductItemMapper.insert(pmsProductItem);
 
+        PmsProductCategory pmsProductCategory = pmsProductCategoryMapper.selectByPrimaryKey(pmsProductItem.getCid());
+        pmsProductItem.setCategoryName(pmsProductCategory.getName());
+
+        itemProducter.send(pmsProductItem);
 
 
         return OosResult.build(1,"数据插入成功");
     }
 
-    @Override
-    public List<PmsProductCategory> findAll(PmsProductItem pmsProductItem) {
-        return null;
-    }
+
 
     @Override
     public PmsProductItem findByTitle(String title) {
@@ -143,5 +152,10 @@ public class PmsProductItemServiceImpl implements PmsProductItemService {
         pmsProductItemMapper.deleteByExample(pmsProductItemExample);
 
         return OosResult.build(1,"数据批量删除成功");
+    }
+
+    @Override
+    public List<PmsProductItem> getAllData() {
+        return pmsProductItemMapper.selectByExample(new PmsProductItemExample());
     }
 }

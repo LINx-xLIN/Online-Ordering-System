@@ -1,58 +1,37 @@
 package com.lin.oos.pojo;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import org.apache.solr.client.solrj.beans.Field;
+import org.springframework.data.solr.core.mapping.SolrDocument;
 
 import java.io.Serializable;
 import java.util.Date;
 
+
 public class PmsProductItem implements Serializable {
-    /**
-     * id
-     */
+
+
+
+    @Field("id")/*使用这个注释，里面的名字是根据你在solr数据库中配置的来决定*/
     private Integer id;
-
-    /**
-     * title
-     */
+    @Field("title")
     private String title;
-
-    /**
-     * ingredients
-     */
+    @Field("ingredients")
     private String ingredients;
-
-    /**
-     * price
-     */
+    @Field("price")
     private Double price;
-
-    /**
-     * num
-     */
+    @Field("num")
     private Long num;
-
-    /**
-     * image
-     */
+    @Field("image")
     private String image;
-
-    /**
-     * cid
-     */
+    @Field("cid")
     private Integer cid;
-
-    /**
-     * status
-     */
+    @Field("status")
     private Integer status;
-
-    /**
-     * create
-     */
+    @Field("create")
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date create;
-
-
+    @Field("categoryName")
     private String categoryName;
 
     public String getCategoryName() {

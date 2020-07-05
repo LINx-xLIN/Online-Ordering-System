@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("item")
+@RequestMapping("/item")
 public class ItemController {
 
     @Reference

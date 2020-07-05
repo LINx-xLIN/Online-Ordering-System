@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE">
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+	<title>结算页</title>
+
+    <link rel="stylesheet" type="text/css" href="/orderList/css/webbase.css" />
+    <link rel="stylesheet" type="text/css" href="/orderList/css/pages-getOrderInfo.css" />
+
+</head>
+
+<body  >
+
+	<div class="cart py-container">
+
+		<!--主内容-->
+		<div class="checkout py-container">
+			<div class="checkout-tit">
+				<h4 class="tit-txt">填写并核对订单信息</h4>
+			</div>
+			<div class="checkout-steps">
+				<!--收件人信息-->
+				<div class="step-tit">
+					<h5>收件人信息<span><a onclick="addAddress()" class="newadd">新增收货地址</a></span></h5>
+				</div>
+				<div class="step-cont">
+					<div class="addressInfo">
+						<ul class="addr-detail">
+
+							<li class="addr-item" th:each="umsMemberReceiveAddress:${umsMemberReceiveAddresses}">
+							  <div class="test">
+
+								  <div class="con name "><span><a href="javascript:;"  th:text="${umsMemberReceiveAddress.name}" class="nameOrder"><span title="点击取消选择">&nbsp;</span></a></span></div>
+
+
+								  <div class="con address">
+									  <span th:text="${umsMemberReceiveAddress.province}" class="provinceOrder"></span>
+									  <span th:text="${umsMemberReceiveAddress.city}" class="cityOrder"></span>
+									  <span th:text="${umsMemberReceiveAddress.region}" class="regionOrder"></span>
+									  <span th:text="${umsMemberReceiveAddress.detailAddress}" class="detailAddressOrder"></span>
+									  <span th:text="${umsMemberReceiveAddress.phoneNumber}" class="phoneNumberOrder"></span>
+								  </div>
+
+
+								  <input type="hidden" name="addressId" th:value="${umsMemberReceiveAddress.id}">
+								  <a class="con" onclick="editAddress(this)">编辑</a>
+								  <span class="con ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+								  <a class="con" onclick="delAddress(this)">删除</a>
+							  </div>
+
+							</li>
+
+
+						</ul>
+
+
+					</div>
+					<div class="hr"></div>
+
+				</div>
+				<div class="hr"></div>
+
+
+				<!--支付和送货-->
+				<div class="payshipInfo">
+					<div class="step-tit">
+						<h5>支付方式:</h5>
+					</div>
+					<div class="step-cont">
+						<ul class="payType">
+							<li class="selected" >在线支付<span title="点击取消选择"></span></li>
+							<li >货到付款<span title="点击取消选择"></span></li>
+						</ul>
+					</div>
+					<div class="hr"></div>
+					<div class="step-tit">
+						<h5>送货清单</h5>
+					</div>
+
+					<div class="step-cont">
+						<ul class="send-detail">
+							<li ng-repeat="cart in cartList">
+
+								<!--输出商家购物车明细-->
+								<div class="sendGoods" ng-repeat="item in cart.orderItemList">
+									<ul th:each="orderItem:${orderItemDetail!=null?orderItemDetail.orderItems:_} " class="yui3-g">
+										<li class="yui3-u-1-6">
+											<span><img th:src="${orderItem.picPath}" width="100" height="100"/></span>
+										</li>
+										<li class="yui3-u-7-12">
+											<div class="desc" th:text="${orderItem.title}"></div>
+
+										</li>
+										<li class="yui3-u-1-12">
+											<div class="price" th:text="'￥'+${orderItem.totalFee}"></div>
+										</li>
+										<li class="yui3-u-1-12">
+											<div class="num" th:text="'X'+${orderItem.num}"></div>
+										</li>
+										<li class="yui3-u-1-12">
+											<div class="exit">有货</div>
+										</li>
+									</ul>
+
+
+								</div>
+
+							</li>
+
+
+							<li></li>
+							<li></li>
+						</ul>
+					</div>
+					<div class="hr"></div>
+				</div>
+
+			</div>
+		</div>
+		<div class="order-summary">
+			<div class="static fr">
+				<div class="list">
+					<span><i class="number" th:text="${orderItemDetail!=null?orderItemDetail.orderItems.size():_}+'  '"></i>件商品，总商品金额</span>
+					<em class="allprice" th:text="'¥'+${orderItemDetail!=null?orderItemDetail.payment:_}"></em>
+				</div>
+				<div class="list">
+					<span>返现：</span>
+					<em class="money">0.00</em>
+				</div>
+				<div class="list">
+					<span>运费：</span>
+					<em class="transport">0.00</em>
+				</div>
+			</div>
+		</div>
+		<div class="clearfix trade">
+			<div class="fc-price">应付金额:　<span class="price" th:text="'¥'+${orderItemDetail!=null?orderItemDetail.payment:_}"></span></div>
+			<div class="fc-receiverInfo" id="addressOrder"></div>
+		</div>
+		<div class="submit">
+			<a class="sui-btn btn-danger btn-xlarge" href="javascript:void(0);" onclick="submitOrder()" >提交订单</a>
+		</div>
+	</div>
+
+
+
+	<form id="orderForm" method="post" action="/order/create.do">
+
+	</form>
+
+
+
+<script type="text/javascript" src="/orderList/js/plugins/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/orderList/js/plugins/jquery.easing/jquery.easing.min.js"></script>
+<script type="text/javascript" src="/orderList/js/plugins/sui/sui.min.js"></script>
+<script type="text/javascript" src="/orderList/js/pages/getOrderInfo.js"></script>
+
+
+
+	<script type="text/javascript" src="/lib/layer/2.4/layer.js"></script>
+</body>
+
+
+<script type="application/javascript"  th:inline="javascript">
+
+
+
+
+
+	function addAddress() {
+
+
+		layer.open(
+				{
+					type:2,
+					title:"添加地址信息",
+					shade:[0],
+					area:['800px','500px'],
+					content:["/address.html",'yes']
+
+				}
+		)
+
+	}
+
+	function delAddress(node) {
+
+
+		var addressId = $(node.parentNode).find("input[name=addressId]").val();
+
+
+		layer.confirm('确认要删除吗？',function (index) {
+			$.post("/order/delAddress.do",{addressId:addressId},function (data) {
+				layer.msg(data.msg,{time:2000,icon:data.status});
+				if (data.status == 1){
+					$(node.parentNode.parentNode).remove();
+				}
+			})
+		})
+
+
+
+
+
+
+
+
+
+	}
+
+	function editAddress(node) {
+
+		var addressId = $(node.parentNode).find("input[name=addressId]").val();
+
+
+		layer.open(
+				{
+					type:2,
+					title:"修改地址信息",
+					shade:[0],
+					area:['800px','500px'],
+					content:["/order/editAddress.do?addressId="+addressId,'yes']
+
+				}
+		)
+
+	}
+
+
+	function submitOrder() {
+
+
+
+
+		var payment = [[${orderItemDetail.payment}]];
+
+		var orderItems = [[${orderItemDetail.orderItems}]];
+
+		for (let i = 0; i <orderItems.length ; i++) {
+
+			$("#orderForm").append(
+					"<input type=\"hidden\" name=\"orderItems[" +
+					i +
+					"].itemId\" value=\"" +
+					orderItems[i].itemId+
+					"\"/>"+
+					"<input type=\"hidden\" name=\"orderItems[" +
+					i +
+					"].num\" value=\"" +
+					orderItems[i].num+
+					"\"/>"+
+					"<input type=\"hidden\" name=\"orderItems[" +
+					i +
+					"].price\" value=\"" +
+					orderItems[i].price+
+					"\"/>"+
+					"<input type=\"hidden\" name=\"orderItems[" +
+					i +
+					"].totalFee\" value=\"" +
+					orderItems[i].totalFee+
+					"\"/>"+
+					"<input type=\"hidden\" name=\"orderItems[" +
+					i +
+					"].title\" value=\"" +
+					orderItems[i].title +
+					"\"/>"+
+					"<input type=\"hidden\" name=\"orderItems[" +
+					i +
+					"].picPath\" value=\"" +
+					orderItems[i].picPath+
+					"\"/>"
+			);
+
+
+
+		}
+
+		var paymentType = $(".step-cont .payType .selected").text()=='在线支付'?1:2;
+
+
+
+
+
+		$("#orderForm").append(
+				"               <input type=\"hidden\" name=\"payment\" value=\"" +
+				payment +
+				"\"/>\n" +
+
+				"<input type=\"hidden\" name=\"paymentType\" value=\"" +
+				paymentType +
+				"\"/>\n"
+		);
+
+		$("#orderForm").submit();
+
+
+
+
+
+
+
+
+
+	}
+
+</script>
+
+</html>

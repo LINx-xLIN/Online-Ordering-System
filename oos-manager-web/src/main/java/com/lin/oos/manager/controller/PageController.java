@@ -2,14 +2,14 @@ package com.lin.oos.manager.controller;
 
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.lin.oos.pojo.PmsAdmin;
 import com.lin.oos.service.PmsAdminService;
 import com.lin.oos.vo.OosResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @Controller
@@ -20,15 +20,7 @@ public class PageController {
 
 
     @RequestMapping("/{page}.html")
-    public String showIndex(@PathVariable String page,HttpSession httpSession){
-
-        if (httpSession.getAttribute("pmsAdmin") == null && !page.equals("login")) {
-
-            return "redirect:/login.html";
-        }
-
-        /*System.out.println("跳转到"+page+".html");*/
-
+    public String showIndex(@PathVariable String page){
 
         return page;
     }

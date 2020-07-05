@@ -9,7 +9,6 @@ import java.util.List;
 public interface PmsProductItemService {
     OosResult save(PmsProductItem pmsProductItem);
 
-    List<PmsProductCategory> findAll(PmsProductItem pmsProductItem);
 
     PmsProductItem findByTitle(String title);
 
@@ -23,4 +22,6 @@ public interface PmsProductItemService {
 
 
     OosResult batchDelete(List<Integer> itemIds);
+
+    List<PmsProductItem> getAllData();
 }

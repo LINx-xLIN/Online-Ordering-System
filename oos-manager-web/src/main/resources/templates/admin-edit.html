@@ -1,0 +1,177 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- 设置页面的 基本路径，页面所有资源引入和页面的跳转全部基于 base路径 -->
+    <base href="<%=basePath%>">
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="stylesheet" type="text/css" href="/h-ui/css/H-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="/h-ui.admin/css/H-ui.admin.css" />
+    <link rel="stylesheet" type="text/css" href="/lib/Hui-iconfont/1.0.8/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="/h-ui.admin/skin/default/skin.css" id="skin" />
+    <link rel="stylesheet" type="text/css" href="/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="/lib/zTree/v3/css/zTreeStyle/zTreeStyle.css" />
+
+</head>
+<body>
+<article class="page-container">
+    <form  class="form form-horizontal" th:action="${pmsAdmin ==null ?'/admin/insert.do' : '/admin/update.do'}"  id="adminForm" method="post">
+
+        <input name="id"   type="hidden"   th:value="${pmsAdmin!=null ? pmsAdmin.id:_}">
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>管理员名称：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input id="username" name="username" type="text" class="input-text"  th:value="${pmsAdmin!=null ? pmsAdmin.username:_}"  th:disabled="${pmsAdmin!=null}"    placeholder="请输入管理员名称"  >
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>密码：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input id="password" name="password" type="password" class="input-text"  th:value="${pmsAdmin!=null ? pmsAdmin.password:_}"      placeholder="请输入管理员密码"  >
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>确认密码：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input id="confirmPassword" name="confirmPassword" type="password" class="input-text"  th:value="${pmsAdmin!=null ? pmsAdmin.password:_}"      placeholder="请确认密码"  >
+            </div>
+        </div>
+
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>状态：</label>
+            <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+                <div class="radio-box">
+                    <input name="stauts" type="radio" id="type-1" th:checked="${pmsAdmin!=null?pmsAdmin.stauts == 1:_}" value='1'>
+                    <label for="type-1">有效</label>
+                </div>
+                <div class="radio-box">
+                    <input name="stauts" type="radio" id="type-2" th:checked="${pmsAdmin!=null?pmsAdmin.stauts == 0:_}" value='0'>
+                    <label for="type-2">无效</label>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+            </div>
+        </div>
+    </form>
+</article>
+
+
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" src="/lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="/lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript" src="/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+<script type="text/javascript" src="/lib/jquery.validation/1.14.0/validate-methods.js"></script>
+<script type="text/javascript" src="/lib/jquery.validation/1.14.0/messages_zh.js"></script>
+<script type="text/javascript" src="/lib/zTree/v3/js/jquery.ztree.all-3.5.min.js"></script>
+
+<script type="text/javascript">
+
+
+
+
+
+    $(function(){
+
+        /*
+            使用jquery.validate 进行表单校验
+        */
+        $("#adminForm").validate({
+            rules:{
+                username:{
+                    required:true,
+                    remote: {
+                        url: "/admin/checkName.do",     //后台处理程序
+                        type: "post",               //数据发送方式
+                        dataType: "json",           //接受数据格式
+                        data: {                     //要传递的数据
+                            name: function() {
+                                return $("#username").val();
+                            }
+                        }
+                    }
+                },
+
+                password:{
+                    required:true
+                },
+                confirmPassword:{
+                    equalTo:"#password"
+
+                },
+
+                stauts:"required"
+
+
+
+            },
+            messages:{
+                username:{
+                    required:"管理员名称不能为空",
+                    remote: "管理员名称已经存在"
+                },
+                password:{
+                    required:"密码不能为空"
+                },
+                confirmPassword:{
+                    equalTo:"密码不一致"
+
+                },
+
+                stauts:"状态不能为空"
+
+            },
+            submitHandler:function(form){
+                //form ： 是原生js dom对象
+                /*
+                    原生js对象转jquery对象    $(dom对象)
+                    jq对象转原生对象  jq对象[0]
+                */
+
+                //将表单转换成jq对象
+                var jqForm = $(form);
+
+
+
+                //使用jquery表单异步提交
+                jqForm.ajaxSubmit(function(data){
+
+                    layer.msg(data.msg,{icon:data.status,time:2000},function(){
+                        //让父层页面重新刷新一下（重新加载一下）
+                        window.parent.refreshTable();
+                        //关闭当前弹出层
+                        parent.layer.closeAll();
+                    });
+                });
+
+            }
+
+        });
+
+
+    });
+
+
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

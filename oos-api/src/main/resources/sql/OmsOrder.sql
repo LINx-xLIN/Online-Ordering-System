@@ -1,0 +1,25 @@
+CREATE TABLE `oms_order` (
+	`order_id` VARCHAR(50) NOT NULL DEFAULT '' COMMENT '订单id' COLLATE 'utf8_bin',
+	`payment` VARCHAR(50) NULL DEFAULT NULL COMMENT '实付金额。精确到2位小数;单位:元。如:200.07，表示:200元7分' COLLATE 'utf8_bin',
+	`payment_type` INT(2) NULL DEFAULT NULL COMMENT '支付类型，1、在线支付，2、货到付款',
+	`post_fee` VARCHAR(50) NULL DEFAULT NULL COMMENT '邮费。精确到2位小数;单位:元。如:200.07，表示:200元7分' COLLATE 'utf8_bin',
+	`status` INT(10) NULL DEFAULT NULL COMMENT '状态：1、未付款，2、已付款，3、未发货，4、已发货，5、交易成功，6、交易关闭',
+	`create_time` DATETIME NULL DEFAULT NULL COMMENT '订单创建时间',
+	`update_time` DATETIME NULL DEFAULT NULL COMMENT '订单更新时间',
+	`payment_time` DATETIME NULL DEFAULT NULL COMMENT '付款时间',
+	`consign_time` DATETIME NULL DEFAULT NULL COMMENT '发货时间',
+	`end_time` DATETIME NULL DEFAULT NULL COMMENT '交易完成时间',
+	`close_time` DATETIME NULL DEFAULT NULL COMMENT '交易关闭时间',
+	`shipping_name` VARCHAR(20) NULL DEFAULT NULL COMMENT '物流名称' COLLATE 'utf8_bin',
+	`shipping_code` VARCHAR(20) NULL DEFAULT NULL COMMENT '物流单号' COLLATE 'utf8_bin',
+	`user_id` BIGINT(20) NULL DEFAULT NULL COMMENT '用户id',
+	`buyer_message` VARCHAR(100) NULL DEFAULT NULL COMMENT '买家留言' COLLATE 'utf8_bin',
+	`buyer_nick` VARCHAR(50) NULL DEFAULT NULL COMMENT '买家昵称' COLLATE 'utf8_bin',
+	`buyer_rate` INT(2) NULL DEFAULT NULL COMMENT '买家是否已经评价',
+	PRIMARY KEY (`order_id`),
+	INDEX `create_time` (`create_time`),
+	INDEX `buyer_nick` (`buyer_nick`),
+	INDEX `status` (`status`),
+	INDEX `payment_type` (`payment_type`)
+)
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT 'oms_order';

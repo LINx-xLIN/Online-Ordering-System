@@ -5,3 +5,4 @@ oos-manager-service用户服务的service层8072
 oos-manager-web用户服务的web层8082
 
 oos-portal-web用户服务的web层8083
+oos-portal-service用户服务的service层8073

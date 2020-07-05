@@ -6,10 +6,8 @@ import com.lin.oos.util.IDUtils;
 import com.lin.oos.vo.UploadResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -43,7 +41,7 @@ public class UploadServiceImpl implements UploadService {
         //第一步：构建返回对象
         UploadResult result=new UploadResult();
         //第二步：上传处理
-        //需求：文件路径为/ego/images/年份/月份/日/
+        //需求：文件路径为/oos/images/年份/月份/日/
         Date date=new Date();
         final String year = new SimpleDateFormat("yyyy").format(date);
         final  String month=new SimpleDateFormat("MM").format(date);

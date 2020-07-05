@@ -1,0 +1,371 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- 设置页面的 基本路径，页面所有资源引入和页面的跳转全部基于 base路径 -->
+    <base href="<%=basePath%>">
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="stylesheet" type="text/css" href="/h-ui/css/H-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="/h-ui.admin/css/H-ui.admin.css" />
+    <link rel="stylesheet" type="text/css" href="/lib/Hui-iconfont/1.0.8/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="/h-ui.admin/skin/default/skin.css" id="skin" />
+    <link rel="stylesheet" type="text/css" href="/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="/lib/zTree/v3/css/zTreeStyle/zTreeStyle.css" />
+
+    <!--图片上传-->
+    <link href="/lib/webuploader/0.1.5/webuploader.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body>
+<article class="page-container">
+    <form  class="form form-horizontal" th:action="${umsMember ==null ?'/member/insert.do' : '/member/update.do'}"  id="memberForm" method="post">
+
+        <input name="id"   type="hidden"  th:value="${umsMember!=null ? umsMember.id:_}">
+
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>会员等级：</label>
+            <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+                <div class="radio-box">
+                    <input name="memberLevel" type="radio" id="memberLeveltype-1" th:checked="${umsMember!=null?umsMember.memberLevel == 1:_}" value='1'>
+                    <label for="memberLeveltype-1">超级会员</label>
+                </div>
+                <div class="radio-box">
+                    <input name="memberLevel" type="radio" id="memberLeveltype-2" th:checked="${umsMember!=null?umsMember.memberLevel == 0:_}" value='0'>
+                    <label for="memberLeveltype-2">普通会员</label>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>用户名：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input id="username" name="username" type="text" class="input-text"  th:value="${umsMember!=null ? umsMember.username:_}"  th:disabled="${umsMember!=null}"    placeholder="请输入用户名称"  >
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>密码：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input id="password" name="password" type="password" class="input-text"  th:value="${umsMember!=null ? umsMember.password:_}"    placeholder="请输入密码"  >
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>确认密码：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input id="confirmPassword" name="confirmPassword" type="password" class="input-text"  th:value="${umsMember!=null ? umsMember.password:_}"     placeholder="请输入确认密码"  >
+            </div>
+        </div>
+
+
+
+
+
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>昵称：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input id="nickname" name="nickname" type="text" class="input-text"  th:value="${umsMember!=null ? umsMember.nickname:_}"    placeholder="请输入昵称"  >
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>电话：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input id="phone" name="phone" type="text" class="input-text"  th:value="${umsMember!=null ? umsMember.phone:_}"    placeholder="请输入电话号码"  >
+            </div>
+        </div>
+
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>帐号状态：</label>
+            <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+                <div class="radio-box">
+                    <input name="status" type="radio" id="statustype-1" th:checked="${umsMember!=null?umsMember.status == 1:_}" value='1'>
+                    <label for="statustype-1">启用</label>
+                </div>
+                <div class="radio-box">
+                    <input name="status" type="radio" id="statustype-2" th:checked="${umsMember!=null?umsMember.status == 0:_}" value='0'>
+                    <label for="statustype-2">禁用</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">上传头像：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <div id="uploader-demo">
+                    <!--用来存放member-->
+                    <div id="fileList" class="uploader-list"></div>
+                    <div id="filePicker">选择图片</div>
+                    <input name="icon" id="icon"  type="hidden" th:value="${umsMember!=null ? umsMember.icon:_}" >
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>性别：</label>
+            <div class="formControls col-xs-8 col-sm-9 skin-minimal">
+                <div class="radio-box">
+                    <input name="gender" type="radio" id="gendertype-1" th:checked="${umsMember!=null?umsMember.gender == 1:_}" value='1'>
+                    <label for="gendertype-1">男</label>
+                </div>
+                <div class="radio-box">
+                    <input name="gender" type="radio" id="gendertype-2" th:checked="${umsMember!=null?umsMember.gender == 2:_}" value='2'>
+                    <label for="gendertype-2">女</label>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <!--<div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>积分：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input id="integration" name="integration" type="text" class="input-text"  th:value="${umsMember!=null ? umsMember.integration:_}"    placeholder="请输入积分"  >
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>历史积分：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input id="historyIntegration" name="historyIntegration" type="text" class="input-text"  th:value="${umsMember!=null ? umsMember.historyIntegration:_}"    placeholder="请输入历史积分"  >
+            </div>
+        </div>-->
+
+
+
+
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+            </div>
+        </div>
+    </form>
+</article>
+
+
+
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" src="/lib/jquery/1.11.3/jquery.min.js"></script>
+<script type="text/javascript" src="/lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript" src="/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+<script type="text/javascript" src="/lib/jquery.validation/1.14.0/validate-methods.js"></script>
+<script type="text/javascript" src="/lib/jquery.validation/1.14.0/messages_zh.js"></script>
+<script type="text/javascript" src="/lib/zTree/v3/js/jquery.ztree.all-3.5.min.js"></script>
+
+<!--图片上传-->
+<script type="text/javascript" src="/lib/webuploader/0.1.5/webuploader.min.js"></script>
+
+<!--日期-->
+<script type="text/javascript" src="/Date/birthday.js"></script>
+
+<script type="text/javascript" th:inline="javascript" >
+
+
+    $(function(){
+
+
+
+
+
+
+        /*
+            使用jquery.validate 进行表单校验
+        */
+        $("#memberForm").validate({
+            rules:{
+                username:{
+                    required:true,
+                    remote: {
+                        url: "/member/checkUsername.do",     //后台处理程序
+                        type: "post",               //数据发送方式
+                        dataType: "json",           //接受数据格式
+                        data: {                     //要传递的数据
+                            title: function() {
+                                return $("#username").val();
+                            }
+                        }
+                    }
+                },
+                password:{
+                    required:true
+                },
+                confirmPassword:{
+                    equalTo:"#password"
+
+                },
+                status:{
+                    required:true
+                }
+
+
+
+            },
+            messages:{
+                username:{
+                    required:"用户名称不能为空",
+                    remote: "用户名称已经存在"
+                },
+                password:{
+                    required:"密码不能为空"
+                },
+                confirmPassword:{
+                    equalTo:"密码不一致"
+
+                },
+                status:{
+                    required:"状态不能为空"
+                }
+
+            },
+            submitHandler:function(form){
+                //form ： 是原生js dom对象
+                /*
+                    原生js对象转jquery对象    $(dom对象)
+                    jq对象转原生对象  jq对象[0]
+                */
+
+                //将表单转换成jq对象
+                var jqForm = $(form);
+
+
+                //使用jquery表单异步提交
+                jqForm.ajaxSubmit(function(data){
+
+                    layer.msg(data.msg,{icon:data.status,time:2000},function(){
+                        //让父层页面重新刷新一下（重新加载一下）
+                        window.parent.refreshTable();
+                        //关闭当前弹出层
+                        parent.layer.closeAll();
+                    });
+                });
+
+            }
+
+        });
+
+
+    });
+
+    $(function(){
+        // 初始化Web Uploader
+        var uploader = WebUploader.create({
+
+            // 选完文件后，是否自动上传。
+            auto: true,
+
+            // swf文件路径
+            swf: '/lib/webuploader/0.1.5/Uploader.swf',
+
+            // 文件接收服务端。
+            server: '/image/upload.do',
+
+            // 选择文件的按钮。可选。
+            // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+            pick: '#filePicker',
+
+            // 只允许选择图片文件。
+            accept: {
+                title: 'Images',
+                extensions: 'gif,jpg,jpeg,bmp,png',
+                mimeTypes: 'image/*'
+            }
+        });
+
+        // 当有文件添加进来的时候
+        uploader.on( 'fileQueued', function( file ) {
+            var $list = $("#fileList"),
+                $li = $(
+                    '<div id="' + file.id + '" class="file-member thumbnail">' +
+                    '<img>' +
+                    '<div class="info">' + file.name + '</div>' +
+                    '</div>'
+                ),
+                $img = $li.find('img');
+
+
+            // $list为容器jQuery实例
+            $list.append( $li );
+
+            // 创建缩略图
+            uploader.makeThumb( file, function( error, src ) {
+                if ( error ) {
+                    $img.replaceWith('<span>不能预览</span>');
+                    return;
+                }
+
+                $img.attr( 'src', src );
+            }, 100, 100 ); //100x100为缩略图尺寸
+        });
+
+        // 文件上传过程中创建进度条实时显示。
+        uploader.on( 'uploadProgress', function( file, percentage ) {
+            var $li = $( '#'+file.id ),
+                $percent = $li.find('.progress span');
+
+            // 避免重复创建
+            if ( !$percent.length ) {
+                $percent = $('<p class="progress"><span></span></p>')
+                    .appendTo( $li )
+                    .find('span');
+            }
+
+            $percent.css( 'width', percentage * 100 + '%' );
+        });
+
+        // 文件上传成功，给member添加成功class, 用样式标记上传成功。
+        uploader.on( 'uploadSuccess', function( file , response) {
+            $( '#'+file.id ).addClass('upload-state-done');
+
+
+            if(response.error==0){
+                console.log(response.url);
+                $("#image").val(response.url);
+            }
+
+        });
+
+        // 文件上传失败，显示上传出错。
+        uploader.on( 'uploadError', function( file ) {
+            var $li = $( '#'+file.id ),
+                $error = $li.find('div.error');
+
+            // 避免重复创建
+            if ( !$error.length ) {
+                $error = $('<div class="error"></div>').appendTo( $li );
+            }
+
+            $error.text('上传失败');
+        });
+
+        // 完成上传完了，成功或者失败，先删除进度条。
+        uploader.on( 'uploadComplete', function( file ) {
+            $( '#'+file.id ).find('.progress').remove();
+        });
+
+    });
+
+
+</script>
+
+
+
+
+
+
+</body>
+</html>

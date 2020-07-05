@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="cotn_principal">
+    <div class="cont_centrar">
+        <div class="cont_login">
+            <div class="cont_forms cont_forms_active_login">
+                <div class="cont_img_back_"><img src="po.jpg" alt=""/></div>
+
+
+                <div class="cont_form_sign_up" style="display: block;opacity: 1">
+                    <h3>SIGN UP</h3>
+                    <form id="registerForm" method="post">
+
+                        <input type="text" placeholder="Username" name="username" id="username"/>
+                        <input type="password" placeholder="Password" name="password" id="password"/>
+                        <input type="password" placeholder="Confirm Password" name="confirmPassword"/>
+                        <input type="text" placeholder="Phone" name="phone"/>
+
+                        <br>
+                        <button class="btn_sign_up" >SIGN UP</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript" src="/lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+<script type="text/javascript" src="/lib/jquery.validation/1.14.0/validate-methods.js"></script>
+<script type="text/javascript" src="/lib/layer/2.4/layer.js"></script>
+
+<script type="text/javascript">
+
+
+
+
+
+    $(function(){
+
+        /*
+            使用jquery.validate 进行表单校验
+        */
+        $("#registerForm").validate({
+            rules:{
+                username:{
+                    required:true,
+                    minlength:3,
+                    remote: {
+                        url: "umsMember/checkUsername.do",     //后台处理程序
+                        type: "post",               //数据发送方式
+                        dataType: "json",           //接受数据格式
+                        data: {                     //要传递的数据
+                            username: function() {
+                                return $("#username").val();
+                            }
+                        }
+                    }
+
+                },
+                password:{
+                    required:true
+                },
+                confirmPassword:{
+                    equalTo:"#password"
+                },
+                phone:{
+                    required:true,
+
+                }
+
+
+
+            },
+            messages:{
+                username:{
+                    required:"用户名不能为空",
+                    minlength:"用户名长度至少为3个字符",
+                    remote: "用户已被使用"
+                },
+                password:{
+                    required:"密码不能为空"
+                },
+                confirmPassword:{
+                    equalTo:"确认密码必须和密码相等"
+                },
+                phone:{
+                    required:"电话不能为空"
+                }
+
+            },
+            submitHandler:function(form){
+                //form ： 是原生js dom对象
+                /*
+                    原生js对象转jquery对象    $(dom对象)
+                    jq对象转原生对象  jq对象[0]
+                */
+
+                //将表单转换成jq对象
+                var jqForm = $(form);
+
+                username = jqForm.find("input[name=username]").val();
+
+                password = jqForm.find("input[name=password]").val();
+
+                phone = jqForm.find("input[name=phone]").val();
+
+                $.ajax({
+                    type: "post",
+                    url: "register.do",
+                    data: {username: username,password:password,phone:phone},
+                    dataType: "json",
+                    success: function (data) {
+
+
+                        layer.msg(data.msg,{icon:data.status,time:2000},function(){
+
+                            if (data.status == 1) {
+                                location.href = "login.html";
+                            }
+                        });
+
+
+
+
+
+
+                    }
+
+                })
+
+
+
+
+
+
+            }
+
+        });
+
+
+    });
+
+
+
+
+</script>
+
+</html>

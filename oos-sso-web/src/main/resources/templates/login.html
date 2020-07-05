@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+<div class="cotn_principal">
+    <div class="cont_centrar">
+        <div class="cont_login">
+            <div class="cont_forms cont_forms_active_login">
+
+                <div class="cont_img_back_"><img src="po.jpg" alt=""/></div>
+                <div class="cont_form_login" style="display: block;opacity: 1">
+                    <h2>LOGIN</h2>
+                    <form id="loginForm"  method="post" >
+
+                        <input type="text" placeholder="Username" name="username"/>
+
+
+                        <input type="password" placeholder="Password" name="password"/>
+                        <br>
+
+
+                        <button class="btn_login" >LOGIN</button>
+
+                        <br><br>
+                        <a href="register.html" >注册</a>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript" src="/lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+<script type="text/javascript" src="/lib/jquery.validation/1.14.0/validate-methods.js"></script>
+<script type="text/javascript" src="/lib/layer/2.4/layer.js"></script>
+
+<script type="text/javascript">
+
+
+
+
+
+    $(function(){
+
+        /*
+            使用jquery.validate 进行表单校验
+        */
+        $("#loginForm").validate({
+            rules:{
+                username:{
+                    required:true,
+                },
+                password:{
+                    required:true
+                }
+
+
+
+            },
+            messages:{
+                username:{
+                    required:"用户名不能为空"
+                },
+                password:{
+                    required:"密码不能为空"
+                }
+
+            },
+            submitHandler:function(form){
+                //form ： 是原生js dom对象
+                /*
+                    原生js对象转jquery对象    $(dom对象)
+                    jq对象转原生对象  jq对象[0]
+                */
+
+                //将表单转换成jq对象
+                var jqForm = $(form);
+
+                username = jqForm.find("input[name=username]").val();
+
+                password = jqForm.find("input[name=password]").val();
+
+                $.ajax({
+                    type: "post",
+                    url: "login.do",
+                    data: {username: username,password:password},
+                    dataType: "json",
+                    success: function (data) {
+
+                        if (data.status == 1) {
+                            location.href = "http://localhost:8083";
+                        }else {
+                            layer.msg(data.msg,{icon:data.status,time:2000},function(){
+
+                                /*//让父层页面重新刷新一下（重新加载一下）
+                                window.parent.refreshTable();
+                                //关闭当前弹出层
+                                parent.layer.closeAll();*/
+                            });
+                        }
+
+
+
+
+
+                    }
+
+                })
+
+
+
+
+
+
+            }
+
+        });
+
+
+    });
+
+
+
+
+</script>
+
+
+</html>

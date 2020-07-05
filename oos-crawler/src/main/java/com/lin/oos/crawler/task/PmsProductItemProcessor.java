@@ -16,10 +16,9 @@ public class PmsProductItemProcessor implements PageProcessor {
 
     private Site site = Site.me()
             .setCharset("UTF-8")//设置编码
-            .setTimeOut(10*1000)//设置超时时间
+            .setTimeOut(10 * 1000)//设置超时时间
             .setRetrySleepTime(3000)//设置重试的间隔时间
             .setRetryTimes(3);//设置重试的次数
-
 
 
     @Override
@@ -33,7 +32,7 @@ public class PmsProductItemProcessor implements PageProcessor {
 
         /*System.out.println(nodes.get(0).css("ul li").nodes().size());*/
 
-        if(nodes.size()==0){
+        if (nodes.size() == 0) {
             List<Selectable> itemNodes = page.getHtml().css("div#J_list ul li").nodes();
 
 
@@ -41,31 +40,31 @@ public class PmsProductItemProcessor implements PageProcessor {
 
             for (Selectable itemNode : itemNodes) {
                 PmsProductItem pmsProductItem = new PmsProductItem();
-                pmsProductItem.setTitle(itemNode.css("div.detail h2 a","text").toString());
+                pmsProductItem.setTitle(itemNode.css("div.detail h2 a", "text").toString());
                 pmsProductItem.setImage(Jsoup.parse(itemNode.css("div.pic a img").toString()).select("img").attr("data-src"));
-                pmsProductItem.setCategoryName(page.getHtml().css("div.ui_title_wrap.clear h1.on a","text").toString());
-                pmsProductItem.setIngredients(itemNode.css("div.detail p.subcontent","text").toString().split("原料：")[1]);
-                pmsProductItem.setNum((long)(Math.random()*100)+1);
+                pmsProductItem.setCategoryName(page.getHtml().css("div.ui_title_wrap.clear h1.on a", "text").toString());
+                pmsProductItem.setIngredients(itemNode.css("div.detail p.subcontent", "text").toString().split("原料：")[1]);
+                pmsProductItem.setNum((long) (Math.random() * 100) + 1);
 
 
-                pmsProductItem.setPrice(Double.valueOf(String.format("%.2f",((Math.random()*10)+1))));
+                pmsProductItem.setPrice(Double.valueOf(String.format("%.2f", ((Math.random() * 10) + 1))));
 
                 pmsProductItem.setStatus(1);
                 pmsProductItems.add(pmsProductItem);
 
             }
-            page.putField("pmsProductItems",pmsProductItems);
+            page.putField("pmsProductItems", pmsProductItems);
 
             String nextUrl = Jsoup.parse(page.getHtml().toString()).select("div.ui-page.mt10 div.ui-page-inner a.now_page").next().attr("href");
 
 
-            if (nextUrl != null && countTitlePage<1) {
+            if (nextUrl != null && countTitlePage < 1) {
                 countTitlePage++;
                 page.addTargetRequest(nextUrl);
             }
 
 
-        }else {
+        } else {
 
             for (Selectable node : nodes) {
                 List<Selectable> node1s = node.css("ul li").nodes();
@@ -78,14 +77,10 @@ public class PmsProductItemProcessor implements PageProcessor {
                 }
 
 
-
-
             }
 
 
-
         }
-
 
 
     }
