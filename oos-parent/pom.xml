@@ -41,7 +41,7 @@
         <beanUtils.version>1.9.3</beanUtils.version>
 
 
-        <commons-net.version>3.3</commons-net.version>
+        <commons-net.version>3.9.0</commons-net.version>
         <mybatis-pagehelper.version>1.2.5</mybatis-pagehelper.version>
 
 
